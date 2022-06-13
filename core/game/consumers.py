@@ -1,3 +1,4 @@
+from email import message
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from api.models import Game
@@ -73,6 +74,17 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+        if cmd == 'DRAW':
+            message = data['message']
+
+            await self.channel_layer.group_send(
+            self.game_name,
+                {
+                    'type': 'draw',
+                    'message': message,
+                }
+            )
+
         if cmd == 'VOTE':
             vote = data['vote']
 
@@ -94,6 +106,15 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'access_code': access_code,
                 }
             )
+
+    async def draw(self, event):
+        type = event['type']
+        message = event['message']
+
+        await self.send(text_data=json.dumps({
+            'type': type,
+            'message': message
+        }))
 
     async def start_new_game(self, event):
         type = event['type']

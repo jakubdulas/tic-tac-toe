@@ -155,13 +155,37 @@ function Board() {
             },
           });
           break;
+        case "draw":
+          client.close();
+          navigate(`/announce-winner`, {
+            state: {
+              message: data.message,
+              score: score,
+              creator: players.host,
+              opponent: players.guest,
+              gameCode: gameCode,
+            },
+          });
+          break;
       }
     };
 
     client.onclose = () => {
       console.log("disconnected");
     };
-  }, []);
+  }, [score, players]);
+
+  const isDraw = () => {
+    for (let r = 0; r < board.length; r++) {
+      let cols = board[r];
+      for (let c = 0; c < cols.length; c++) {
+        if (cols[c] === "") {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
 
   const makemove = (ri, ci) => {
     if (
@@ -198,6 +222,14 @@ function Board() {
               })
             );
           });
+      } else if (isDraw()) {
+        console.log("draw");
+        client.send(
+          JSON.stringify({
+            type: "DRAW",
+            message: "Remis",
+          })
+        );
       }
     }
   };

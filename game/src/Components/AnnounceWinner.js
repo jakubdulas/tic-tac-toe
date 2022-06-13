@@ -15,6 +15,8 @@ function AnnounceWinner() {
     return new WebSocket(`ws://127.0.0.1:8000/ws/game/${state.gameCode}/`);
   }, []);
 
+  console.log(state);
+
   React.useEffect(() => {
     client.onopen = () => {
       console.log("connected");
@@ -131,7 +133,6 @@ function AnnounceWinner() {
   return (
     <Container className="mt-5">
       <div className="d-flex justify-content-center align-items-center flex-column">
-        <h5>Zwycięża:</h5>
         <h1 className="mb-5">{state.message}</h1>
         <div className="d-flex justify-content-center align-items-center">
           <h3>{state.creator} </h3>
